@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -92,11 +93,11 @@ WSGI_APPLICATION = 'jobfinder.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'jobfinder_db',
-        'USER': 'myuser',      
-        'PASSWORD': 'mypassword',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.environ.get('DB_NAME', 'jobfinder_db'),
+        'USER': os.environ.get('DB_USER', 'myuser'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'mypassword'),
+        'HOST': os.environ.get('DB_HOST', 'db'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
