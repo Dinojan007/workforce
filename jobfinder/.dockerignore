@@ -1,0 +1,15 @@
+.git
+.gitignore
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+db.sqlite3
+.DS_Store
+d001/
+.vscode/
+.idea/
+.dockerignore
+Dockerfile
+**/migrations/*.py
+!**/migrations/__init__.py
