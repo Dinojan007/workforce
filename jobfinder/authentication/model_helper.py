@@ -1,0 +1,361 @@
+from .models import *
+from users.models import *
+from django.conf import settings
+from rest_framework.authtoken.models import Token
+import random
+import string
+
+def get_user_token(username):
+    try:
+        user = User.objects.get(username=username)
+        token, _ = Token.objects.get_or_create(user=user)
+        return token.key
+    except User.DoesNotExist:
+        return None
+    except Exception:
+        return None
+    
+def generate_otp(length=4):
+    """Generate a random numeric OTP of given length."""
+    digits = string.digits
+    otp = ''.join(random.choice(digits) for _ in range(length))
+    return otp
+
+
+
+
+def get_active_user(**kargs):
+    try:
+        return UserAuthentication.objects.get(**kargs)
+    except:
+        return None
+
+def getuser_by_mobile(username):
+    try:
+        ep = UserPersonalInfo.objects.get(mobile_number=username)
+        return ep.user
+    except:
+        return None
+
+def get_object_by_pk(model, pk):
+    try:
+        return model.objects.get(pk=pk)
+    except:
+        return None
+
+def get_user_from_request(request_info, data):
+    user = request_info['user']
+    if 'user_id' in data:
+        try:
+            employeeCompanyInfo = get_object_by_pk(
+                EmployeeCompanyInfo, data['user_id'])
+            user = employeeCompanyInfo.user
+        except:
+            pass
+    return user
+
+def get_user_company_from_request(request):
+    response = {
+        "user": None,
+        "company_info": None,
+        "is_admin": False,
+        'is_branch_admin': False,
+        "is_super_admin": False,
+        "is_job_seeker": False,
+        "is_contractor": False,
+        "is_client":False,
+
+    }
+    # print("tokensss")
+    try:
+        auth_header = request.META.get('HTTP_AUTHORIZATION')
+        if auth_header and auth_header.startswith("Token "):
+            token_key = auth_header.replace("Token ", "")
+            try:
+                token_obj = Token.objects.get(key=token_key)
+                response = get_user_company_from_user(token_obj.user)
+            except Token.DoesNotExist:
+                pass
+    except Exception:
+        pass
+    return response
+
+def get_user_company_from_user(user):
+
+    response = {
+        "user": None,
+        "company_info": None,
+        "employee_id": None,
+        "is_admin": False,
+        'is_branch_admin': False,
+        "is_super_admin": False,
+        "is_guest": False,
+        "is_job_seeker": False,
+        "is_contractor": False,
+        "is_client":False,
+        'has_company': False,
+        'has_company_branch_location': False,
+        'company': None,
+        'company_branch': None,
+        'company_branch_location': None,
+        'can_update_location': False,
+        'photo': None,
+        'name': None,
+        'mobile_number': None
+    }
+
+    try:
+        response['user'] = user
+        user_auth = get_active_user(user=user)
+        response['is_admin'] = user_auth.is_active and user_auth.is_admin
+        response['designation'] = '-'
+        try:
+            employee_company_info = EmployeeCompanyInfo.objects.get(user=user)
+            response['company_info'] = employee_company_info.company
+            response['employee_id'] = employee_company_info.id
+            try:
+                response['photo'] = employee_company_info.photo.url
+            except:
+                pass
+
+            response['name'] = employee_company_info.user.username
+            response['is_super_admin'] = employee_company_info.authentication.is_super_admin
+            response['is_job_seeker'] = employee_company_info.authentication.is_job_seeker
+            response['is_guest'] = employee_company_info.authentication.is_guest
+            response['is_contractor'] = employee_company_info.authentication.is_contractor
+            response['is_client']=employee_company_info.authentication.is_client
+
+            employee_personal_info = UserPersonalInfo.objects.get(
+                user=user)
+            response['personal_info'] = employee_personal_info
+            response['mobile_number'] = employee_personal_info.mobile_number
+
+            try:
+                response['is_branch_admin'] = user_auth.is_active and employee_company_info.designation.is_admin
+                response['designation'] = employee_company_info.designation.name
+            except:
+                pass
+            response['has_company'] = True
+            response['company'] = {
+                "name": employee_company_info.company.brand_name, "id": employee_company_info.company.id, 'type_is_provider': employee_company_info.company.type_is_provider}
+            response['company_branch'] = {
+                "name": employee_company_info.company_branch.name, "id": employee_company_info.company_branch.id}
+
+            response['can_update_location'] = employee_company_info.company_branch.can_update_location
+
+
+        except Exception as e:
+            print(e)
+            response['has_company'] = False
+            pass
+
+    except:
+        pass
+
+        print("responseresponseresponseHeader=======================")
+    # print(response)
+    return response
+    
+# def get_user_company_from_user(user):
+
+#     response = {
+#         "user": None,
+#         "company_info": None,
+#         "employee_id": None,
+#         "is_admin": False,
+#         'is_branch_admin': False,
+#         "is_super_admin": False,
+#         "is_client": False,
+#         "is_contractor": False,
+#         "is_job_seeker": False,
+#         'has_company': False,
+#         'company': None,
+#         'company_branch': None,
+#         'personal_info':None,
+#         'photo': None,
+#         'name': None,
+#         'mobile_number': None
+#     }
+#     try:
+#         response['user']=user
+#         user_auth=get_active_user(user=user)
+#         response['is_admin']=user_auth.is_active and user_auth.is_admin
+
+#         try:
+#             employee_company_info=EmployeeCompanyInfo.objects.get(
+#                 user=user)
+#             response['company_info']=employee_company_info
+#             response['employee_id']=employee_company_info.id
+
+#             try:
+#                 response['photo']=employee_company_info.photo.url
+#             except:
+#                 pass
+
+#             response['name']=employee_company_info.user.username
+#             response['is_super_admin']=employee_company_info.authentication.is_super_admin
+#             response['is_client']=employee_company_info.authentication.is_client
+#             response['is_contractor']=employee_company_info.authentication.is_contractor
+#             response['is_job_seeker']=employee_company_info.authentication.is_job_seeker
+
+#             user_personal_info=UserPersonalInfo.objects.get(
+#                 user=user)
+#             response['personal_info']=user_personal_info
+#             response['mobile_number']=user_personal_info.mobile_number
+
+#             try:
+#                 response['is_branch_admin']=user_auth.is_active and employee_company_info.designation.is_admin
+#                 response['designation'] = employee_company_info.designation.name
+#             except:
+#                 pass
+
+#             response['has_company']=True
+#             response['company']={'name':employee_company_info.company.brand_name,'id':employee_company_info.company.id,
+#                                 'type_is_provider':employee_company_info.company.type_is_provider}
+            
+#         except Exception as e:
+#             response['has_company']=False
+#     except:
+#         pass
+#     return response
+
+class ValidateRequest():
+
+    def __init__(self, request, request_serializer= None):
+
+        self.request=request
+        self.request_data=request.data
+        self.request_info=get_user_company_from_request(request)
+        self.request_serializer=request_serializer
+
+    def employee_company_info(self):
+        return self.request_info['company_info']
+
+    def employee_personal_info(self):
+        employee_personal_info= UserPersonalInfo.objects.get(user=self.request_info['user'])
+        print("employee_personal_info===========>",employee_personal_info.id)
+        return employee_personal_info
+    
+    def is_admin(self):
+        if self.is_valid():
+            userAuthentication = UserAuthentication.objects.get(
+                user=self.request_info['user'])
+            return userAuthentication.is_admin
+        return False
+    
+    def is_valid_user(self):
+        if self.request_info['company_info']:
+            return True
+        else:
+            return False
+    
+    def errors(self):
+        return self.errors
+
+    def is_valid(self):
+        if self.is_valid_user() == False:
+            return False
+        elif self.request_serializer is not None:
+            print("444", self.request_data)
+            request_serializer_response = self.request_serializer(
+                data=self.request_data)
+            if request_serializer_response.is_valid() == True:
+                return True
+            else:
+                self.errors = request_serializer_response.errors
+                print("errors======", request_serializer_response.errors)
+                return False
+        else:
+            return True
+    
+    def is_valid_open_request(self):
+        if self.request_serializer is not None:
+            print("444", self.request_data)
+            request_serializer_response=self.request_serializer(data=self.request_data)
+            if request_serializer_response.is_valid() == True:
+                 print("35444", self.request_data)
+                 return True
+            else:
+                print("5444", self.request_data)
+                self.errors=request_serializer_response.errors
+                print("errors======", request_serializer_response.errors)
+        else:
+            return False
+        
+    def errors_formatted(self):
+        return "Invalid Request Info"
+    
+def get_auth_info(token_key):
+    try:
+        token = Token.objects.get(key=token_key)
+        employee_info = EmployeeCompanyInfo.objects.filter(user=token.user).first()
+        if employee_info:
+            return employee_info.authentication
+        return None
+    except Token.DoesNotExist:
+        return None
+
+
+
+
+
+
+
+# class MemberLoginUsingPassword(APIView):
+      
+#       authentication_classes=[]
+#       permission_classes=[]
+      
+
+#       def post(self,request,formate=None):
+#             data=request.data
+#             print("data================>",data)
+
+#             if 'email' in data:
+#                   email= data['email']
+#                   email=email.lower()
+#             else:
+#                   email=None
+#             if 'mobile_number' in data:
+#                   mobile_number= data['mobile_number']
+#                   print(mobile_number)
+#             else:
+#                   mobile_number= None
+#             password = data['password']
+#             print("received password ============>",password)
+#             if not password:
+#                  return Response(get_validation_failure_response([],"Password is required"))
+
+#             try:
+#                   user = User.objects.filter(email=email).first()
+#                   print("email user==========>",user)
+#             except User.DoesNotExist:
+#                   try:
+#                         user = UserPersonalInfo.objects.get(mobile_number = mobile_number).user
+#                         user = user.email
+#                         print("mobile number===========>",user)
+#                   except:
+#                         user = None
+
+#             if user is not None:
+#                   emp_is_active = EmployeeCompanyInfo.objects.get(user=user).is_active
+#                   if emp_is_active == False :
+#                         return Response(get_validation_failure_response([], "Your account is deactivated. Please contact your administrator."))
+                  
+#                   employeeCompanyInfo=EmployeeCompanyInfo.objects.get(user=user)
+#                   company_status = employeeCompanyInfo.company.is_active
+#                   print("111111=========>")
+#                   if company_status == True:
+#                         print("222222222=========>")
+#                         if user is not None:
+#                               # login(request, user)
+#                               token_obj,created= Token.objects.get_or_create(user=user)
+#                               token_key=token_obj.key
+#                               print("token========>",token_obj)
+#                               return Response(get_success_response(token_key))
+#                         else:
+#                                return Response(get_validation_failure_response([], "Invalid Login Credentials"))
+#                   else:
+#                         return Response(get_validation_failure_response([], "Your account activation is in progress. You will receive an email notification upon activation. Please check back in some time."))
+#             else:
+#                   return Response(get_validation_failure_response([], "Invalid Login Credentials"))
