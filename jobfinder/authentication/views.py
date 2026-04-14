@@ -21,8 +21,8 @@ import random
 
 class RegisterJobSeeker(APIView):
 
-    authentication_classes = []
-    permission_classes = []
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, format=None):
       data = request.data
@@ -108,8 +108,8 @@ class RegisterJobSeeker(APIView):
 
 class RegisterClientAndContractor(APIView):
       
-      authentication_classes = []
-      permission_classes = []
+      authentication_classes = [authentication.TokenAuthentication]
+      permission_classes = [permissions.IsAuthenticated]
 
       def post(self, request, format=None):
             data = request.data
@@ -223,8 +223,8 @@ class RegisterClientAndContractor(APIView):
     
 class MemberLoginUsingPassword(APIView):
       
-      authentication_classes=[]
-      permission_classes=[]
+      authentication_classes = [authentication.TokenAuthentication]
+      permission_classes = [permissions.IsAuthenticated]
 
       def post(self,request,format=None):
 
@@ -302,8 +302,8 @@ class MemberLoginUsingPassword(APIView):
 # send an OTP to user's mobile or email
 class SendOtp (APIView):
 
-      authentication_classes=[]
-      permission_classes=[]
+      authentication_classes = [authentication.TokenAuthentication]
+      permission_classes = [permissions.IsAuthenticated]
 
       def post(self,request,format=None):
 
@@ -413,8 +413,8 @@ class Dashboard(APIView):
 
 class ChangePasswordApi(APIView):
       
-      authentication_classes=[]
-      permission_classes=[]
+      authentication_classes = [authentication.TokenAuthentication]
+      permission_classes = [permissions.IsAuthenticated]
 
       def post(self, request, format=None):
 

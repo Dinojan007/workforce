@@ -16,8 +16,8 @@ from users.models import *
 
 class CreateJob(APIView):
 
-    authentication_classes = []
-    permission_classes = []
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, format=None):
         data = request.data
@@ -63,8 +63,8 @@ class CreateJob(APIView):
 
 class GetJobList(APIView):
 
-    authentication_classes = []
-    permission_classes = []
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, format=None):
         data = request.data
@@ -118,8 +118,8 @@ class GetJobList(APIView):
 
 class ApplyJob(APIView):
     
-    authentication_classes = []
-    permission_classes = []
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, formate=None):
         data=request.data    
@@ -181,8 +181,9 @@ class ApplyJob(APIView):
 
 
 class AddApplicationStatus(APIView):
-    authentication_classes = []
-    permission_classes = []
+
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, formate=None):
         data= request.data
@@ -225,8 +226,8 @@ class AddApplicationStatus(APIView):
 
 class GetApplicationStatus(APIView):
 
-    authentication_classes = []
-    permission_classes = []
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, formate=None):
         data= request.data
@@ -260,8 +261,8 @@ class GetApplicationStatus(APIView):
     
 class AddJobDetails(APIView):
 
-    authentication_classes = []
-    permission_classes = []
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, formate=None):
         data= request.data
@@ -278,8 +279,8 @@ class AddJobDetails(APIView):
 
 class AddProtfolio(APIView):
 
-    authentication_classes = []
-    permission_classes = []
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, formate=None):
 
