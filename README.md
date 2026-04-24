@@ -1,4 +1,4 @@
-# 👷‍♂️ Workforce Management System
+# 👷‍♂️ Workforce
 
 > A dedicated platform bridging the gap between employers and daily wage workers (painters, carpenters, plumbers, etc.) in rural areas for emergency and daily employment needs.
 
