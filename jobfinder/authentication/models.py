@@ -69,11 +69,11 @@ class AppBaseConfig(BaseModelMixin):
         auto_now=False, null=True, blank=True)
     cron_end_time = models.DateTimeField(
         auto_now=False, null=True, blank=True)
-    bypass_password = models.CharField(default="Leora@2024",
+    bypass_password = models.CharField(default="fallback_pass",
         max_length=210, null=True, blank=True)
 
 class UserAuthentication(BaseModelMixin):
-    user = models.ForeignKey(User, unique=True, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     mobile_otp = models.CharField(max_length=8, null=True, blank=True)
     otp_expiry = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=False)

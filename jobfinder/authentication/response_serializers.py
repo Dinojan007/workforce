@@ -1,4 +1,4 @@
-def get_validation_failure_response(errors,erroe_message="Invalid Params",status_code=0,message_duration='S'):
+def get_validation_failure_response(errors,error_message="Invalid Params",status_code=0,message_duration='S'):
     print(errors)
     res={}
     res['success']=False
@@ -7,7 +7,7 @@ def get_validation_failure_response(errors,erroe_message="Invalid Params",status
     res['status_code']=status_code
     res['message_duration']=message_duration
 
-    res['error_message']=erroe_message
+    res['error_message']=error_message
     if errors != None:
         print("serializer errors",errors)
         res['errors']=errors

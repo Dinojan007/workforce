@@ -13,7 +13,7 @@ class UserDesignation(BaseModelMixin):
     is_job_seeker=models.BooleanField(default=False)
 
     def __str__(self):
-        return str(self.name) +"===" +str(self.id)+"====="+str(self.code)
+        return str(self.name) +"===" +str(self.id)+"====="+str(getattr(self, 'code', ''))
 
 class UserPersonalInfo(BaseModelMixin):
 
@@ -48,7 +48,7 @@ class EmployeeCompanyInfo(BaseModelMixin):
     is_token_valid = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.user.first_name + "===="+str(self.id)+"========"+str(self.code)
+        return self.user.first_name + "===="+str(self.id)+"========"+str(getattr(self, 'code', ''))
     
 class UserProfessionalInfo(BaseModelMixin):
 
@@ -83,7 +83,8 @@ class UserProfessionalInfo(BaseModelMixin):
             self.custom_days = ['sat', 'sun']
         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return f"{self.available_days_category} - {self.custom_days}"
     rating=models.CharField(max_length=5, null=True, blank=True)
     portfolio_photo = models.ImageField(upload_to='portfolio_photos/', null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.available_days_category} - {self.custom_days}"

@@ -2,7 +2,7 @@ from django.db import models
 from authentication.models import BaseModelMixin
 from users.models import EmployeeCompanyInfo
 from django.contrib.auth.models import User
-from authentication.models import *
+from django.utils.timezone import now
 from company.models import *
 from multiselectfield import MultiSelectField
 

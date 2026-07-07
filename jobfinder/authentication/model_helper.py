@@ -27,20 +27,20 @@ def generate_otp(length=4):
 def get_active_user(**kargs):
     try:
         return UserAuthentication.objects.get(**kargs)
-    except:
+    except Exception:
         return None
 
 def getuser_by_mobile(username):
     try:
         ep = UserPersonalInfo.objects.get(mobile_number=username)
         return ep.user
-    except:
+    except Exception:
         return None
 
 def get_object_by_pk(model, pk):
     try:
         return model.objects.get(pk=pk)
-    except:
+    except Exception:
         return None
 
 def get_user_from_request(request_info, data):
@@ -50,7 +50,7 @@ def get_user_from_request(request_info, data):
             employeeCompanyInfo = get_object_by_pk(
                 EmployeeCompanyInfo, data['user_id'])
             user = employeeCompanyInfo.user
-        except:
+        except Exception:
             pass
     return user
 
@@ -149,7 +149,7 @@ def get_user_company_from_user(user):
             response['has_company'] = False
             pass
 
-    except:
+    except Exception:
         pass
 
         print("responseresponseresponseHeader=======================")
@@ -249,8 +249,8 @@ class ValidateRequest():
         else:
             return False
     
-    def errors(self):
-        return self.errors
+    def get_errors(self):
+        return getattr(self, 'errors_list', None)
 
     def is_valid(self):
         if self.is_valid_user() == False:
@@ -262,7 +262,7 @@ class ValidateRequest():
             if request_serializer_response.is_valid() == True:
                 return True
             else:
-                self.errors = request_serializer_response.errors
+                self.errors_list = request_serializer_response.errors
                 print("errors======", request_serializer_response.errors)
                 return False
         else:
@@ -277,7 +277,7 @@ class ValidateRequest():
                  return True
             else:
                 print("5444", self.request_data)
-                self.errors=request_serializer_response.errors
+                self.errors_list = request_serializer_response.errors
                 print("errors======", request_serializer_response.errors)
         else:
             return False

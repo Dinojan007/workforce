@@ -1,4 +1,10 @@
 services:
+  redis:
+    image: redis:7-alpine
+    container_name: jobfinder_redis
+    ports:
+      - "6379:6379"
+
   db:
     image: postgres:15-alpine
     container_name: jobfinder_db
@@ -32,9 +38,12 @@ services:
       - DB_PASSWORD=${DB_PASSWORD:-mypassword}
       - DB_HOST=db
       - DB_PORT=5432
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/1}
       - SECRET_KEY=${SECRET_KEY}
       - DEBUG=${DEBUG:-True}
     depends_on:
+      redis:
+        condition: service_started
       db:
         condition: service_healthy
 

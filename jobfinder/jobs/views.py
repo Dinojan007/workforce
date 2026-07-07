@@ -41,7 +41,7 @@ class CreateJob(APIView):
         crt_job['reference_no']=data['reference_no']
         crt_job['vacancies']=data['vacancies']
         crt_job['budget']=data['budget']
-        crt_job['expiry_date']=data['expried_date']
+        crt_job['expiry_date']=data.get('expiry_date', data.get('expried_date'))
 
         job_cont={}
         job_cont['mobile_number_01']=data['mobile_number_01']
@@ -121,7 +121,7 @@ class ApplyJob(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, formate=None):
+    def post(self, request, format=None):
         data=request.data    
 
         job_id = data.get('job_id')
@@ -144,7 +144,7 @@ class ApplyJob(APIView):
         job_app={}
         job_app['job_id']=data['job_id']
         job_app['applicant_details_id']=data['applicant_details_id']
-        job_app['expected_rate']=data['expection_rate']
+        job_app['expected_rate']=data.get('expected_rate', data.get('expection_rate'))
 
         JobApplication.objects.create(**job_app)
 
@@ -185,7 +185,7 @@ class AddApplicationStatus(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, formate=None):
+    def post(self, request, format=None):
         data= request.data
 
         provider_id=data.get('provider_id')
@@ -194,24 +194,19 @@ class AddApplicationStatus(APIView):
         
         if not provider_id:
             return Response(get_validation_failure_response("Please provide provider_id"))
-        try:
-            Joblist.objects.get(provider_info=provider_id)
-        except Joblist.DoesNotExist:
+        if not Joblist.objects.filter(provider_info=provider_id).exists():
             return Response(get_validation_failure_response("Invalid User"))
 
         if not job_id:
             return Response(get_validation_failure_response("Please provide job_id"))
-        try:
-            jobApplication=JobApplication.objects.filter(job_id=job_id)
-        except JobApplication.DoesNotExist:
-            return Response(get_validation_failure_response("Invalid job_id"))
         
         if not job_applicant_id:
             return Response(get_validation_failure_response("Please provide job_applicant_id"))
+            
         try:
-            JobApplication.objects.filter(id=job_applicant_id)
+            jobApplication = JobApplication.objects.get(id=job_applicant_id, job_id=job_id)
         except JobApplication.DoesNotExist:
-            return Response(get_validation_failure_response("Invalid job_applicant_id"))
+            return Response(get_validation_failure_response("Invalid job_id or job_applicant_id"))
 
         job_app={}
         job_app['job_id']=data['job_id']
@@ -229,7 +224,7 @@ class GetApplicationStatus(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, formate=None):
+    def post(self, request, format=None):
         data= request.data
 
         job_id=data.get('job_id')     
@@ -237,11 +232,10 @@ class GetApplicationStatus(APIView):
         if not job_id:
             return Response(get_validation_failure_response("Please provide job_id"))
 
-        try:
-            queryset=JobApplicationStatus.objects.filter(job_id=job_id)
+        if not JobApplicationStatus.objects.filter(job_id=job_id).exists():
+            return Response(get_validation_failure_response("Invalid job_id or no applications found"))
 
-        except JobApplicationStatus.DoesNotExist:
-            return Response(get_validation_failure_response("Invalid job_id"))
+        queryset=JobApplicationStatus.objects.filter(job_id=job_id)
 
         start_date = data.get('start_date')
         if start_date:
@@ -264,25 +258,45 @@ class AddJobDetails(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, formate=None):
+    def post(self, request, format=None):
         data= request.data
 
         job_id=data.get('job_id')     
+        jobApplicationStatus_id=data.get('jobApplicationStatus_id')
 
         if not job_id:
             return Response(get_validation_failure_response("Please provide job_id"))
+            
+        if not jobApplicationStatus_id:
+            return Response(get_validation_failure_response("Please provide jobApplicationStatus_id"))
+            
         try:
-            jobApplication=JobApplication.objects.filter(job_id=job_id)
+            job_app_status = JobApplicationStatus.objects.get(id=jobApplicationStatus_id)
         except JobApplicationStatus.DoesNotExist:
+            return Response(get_validation_failure_response("Invalid jobApplicationStatus_id"))
+
+        try:
+            joblist = Joblist.objects.get(id=job_id)
+        except Joblist.DoesNotExist:
             return Response(get_validation_failure_response("Invalid job_id"))
 
+        job_details = {}
+        job_details['job'] = joblist
+        job_details['jobApplicationStatus'] = job_app_status
+        job_details['work_start_date'] = data.get('work_start_date')
+        job_details['work_end_date'] = data.get('work_end_date')
+        job_details['payment_details'] = data.get('payment_details')
 
-class AddProtfolio(APIView):
+        JobDetails.objects.create(**job_details)
+        return Response(get_success_response('Job details added successfully'))
+
+
+class AddPortfolio(APIView):
 
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, formate=None):
+    def post(self, request, format=None):
 
         data= request.data
         files = request.FILES

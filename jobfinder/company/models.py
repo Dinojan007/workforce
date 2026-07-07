@@ -1,8 +1,6 @@
-from email.policy import default
 from django.db import models
 from authentication.models import BaseModelMixin
-from django.contrib.auth.models import User 
-from django.utils.timezone import now
+from django.contrib.auth.models import User
 
 class CompanySector(BaseModelMixin):
     name = models.CharField(max_length=220, null=True, blank=True)
@@ -78,12 +76,12 @@ class CompanyBranchInfo(BaseModelMixin):
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     can_update_location = models.BooleanField(default=False)
-    company_contact = models.ForeignKey(CompanyContactInfo, unique=True, on_delete=models.SET_NULL, null=True, blank=True)
+    company_contact = models.OneToOneField(CompanyContactInfo, on_delete=models.SET_NULL, null=True, blank=True)
     def __str__(self):
         title = str(self.name) + "===" + \
-            str(self.is_parent) + "==="+str(self.id)+"====="+str(self.code)
+            str(self.is_parent) + "==="+str(self.id)+"====="+str(getattr(self, 'code', ''))
         if self.parent is not None:
-            title = title + "===" + str(self.parent.id)+"====="+str(self.code)
+            title = title + "===" + str(self.parent.id)+"====="+str(getattr(self, 'code', ''))
         return title
 
 class WeekDay(BaseModelMixin):
@@ -101,4 +99,4 @@ class CompanyDepartment(BaseModelMixin):
         CompanyBranchInfo, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
-        return self.name + "==="+str(self.id)+"====="+str(self.code)
+        return self.name + "==="+str(self.id)+"====="+str(getattr(self, 'code', ''))

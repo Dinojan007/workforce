@@ -21,8 +21,8 @@ import random
 
 class RegisterJobSeeker(APIView):
 
-    authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = []
+    permission_classes = []
 
     def post(self, request, format=None):
       data = request.data
@@ -108,8 +108,8 @@ class RegisterJobSeeker(APIView):
 
 class RegisterClientAndContractor(APIView):
       
-      authentication_classes = [authentication.TokenAuthentication]
-      permission_classes = [permissions.IsAuthenticated]
+      authentication_classes = []
+      permission_classes = []
 
       def post(self, request, format=None):
             data = request.data
@@ -137,7 +137,7 @@ class RegisterClientAndContractor(APIView):
 
             if User.objects.filter(username=username).exists():
                   return Response(get_validation_failure_response("job seeker with this email already exists"))
-            if getuser_by_mobile(data['mobile_number_01']) is not None:
+            if getuser_by_mobile(data['mobile_number']) is not None:
                         return Response(get_validation_failure_response(None, "Job seeker with mobile number already exist"))
             
             #################################
@@ -223,8 +223,8 @@ class RegisterClientAndContractor(APIView):
     
 class MemberLoginUsingPassword(APIView):
       
-      authentication_classes = [authentication.TokenAuthentication]
-      permission_classes = [permissions.IsAuthenticated]
+      authentication_classes = []
+      permission_classes = []
 
       def post(self,request,format=None):
 
@@ -282,7 +282,6 @@ class MemberLoginUsingPassword(APIView):
                   return Response(get_validation_failure_response([], "Your account activation is in progress. You will receive an email notification upon activation."))
 
             if user is not None:
-                  login(request, user)
                   token, _ = Token.objects.get_or_create(user=user)
                   token_key = token.key
                     
@@ -302,8 +301,8 @@ class MemberLoginUsingPassword(APIView):
 # send an OTP to user's mobile or email
 class SendOtp (APIView):
 
-      authentication_classes = [authentication.TokenAuthentication]
-      permission_classes = [permissions.IsAuthenticated]
+      authentication_classes = []
+      permission_classes = []
 
       def post(self,request,format=None):
 
@@ -325,6 +324,8 @@ class SendOtp (APIView):
             # Mobile login
             elif mobile_number:     
                   userPersonalInfo = UserPersonalInfo.objects.filter(mobile_number=mobile_number).first()
+                  if not userPersonalInfo:
+                        return Response(get_validation_failure_response([], "No account found with this mobile number"))
                   user = userPersonalInfo.user
             else:
                   return Response(get_validation_failure_response([], "Invalid user"))

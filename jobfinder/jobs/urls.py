@@ -9,6 +9,7 @@ urlpatterns = [
     # path('getJobApplicant', views.GetJobApplicant.as_view(), name='getJobApplicant'),
     path('addApplicationStatus', views.AddApplicationStatus.as_view(), name='addApplicationStatus'),
     path('getApplicationStatus', views.GetApplicationStatus.as_view(), name='getApplicationStatus'),
-    path('addProtfolio', views.AddProtfolio.as_view(), name='addProtfolio'),
+    path('addJobDetails', views.AddJobDetails.as_view(), name='addJobDetails'),
+    path('addPortfolio', views.AddPortfolio.as_view(), name='addPortfolio'),
 
 ]
