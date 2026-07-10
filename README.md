@@ -1,12 +1,12 @@
 # Workforce
 
-> A dedicated platform bridging the gap between employers and daily wage workers (painters, carpenters, plumbers, etc.) in rural areas for emergency and daily employment needs.
+> A dedicated platform bridging the gap between employers and daily wage workers (painters, carpenters, plumbers, etc.) in rural areas for emergency and daily employment needs..
 
 ---
 
 ## Overview
 
-The Workforce Management System is a robust Django-based RESTful API designed specifically to empower rural communities. It streamlines the process of hiring daily wage laborers for immediate or short-term needs, ensuring fair wage management and a seamless connection between job seekers and clients
+The **Workforce Management System** is a robust Django-based RESTful API designed specifically to empower rural communities. It streamlines the process of hiring daily wage laborers for immediate or short-term needs, ensuring fair wage management and a seamless connection between job seekers and clients.
 
 ## Key Features
 Role-Based Access: Distinct profiles for Job Seekers (Workers), Clients , and Contractors.
@@ -15,11 +15,10 @@ Secure Authentication: Token-based authentication with OTP (One-Time Password) m
 Portfolio Integration: Workers can securely showcase their past work to attract better opportunities.
 High-Performance Caching: Redis-backed caching layer for frequently accessed data (job listings, worker profiles) to reduce database load and improve response times.
 
-## Technical Stack
-Framework: Django 5.x & Django Rest Framework (DRF)
-Database: PostgreSQL
-Caching: Redis
-Security: DRF Authtoken & Custom OTP Logi
+## 🛠️ Technical Stack
+- **Framework**: Django 5.x & Django Rest Framework (DRF)
+- **Database**: PostgreSQL
+- **Security**: DRF Authtoken & Custom OTP Logic
 
 ---
 
