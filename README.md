@@ -23,7 +23,7 @@ Security: DRF Authtoken & Custom OTP Logi
 
 ---
 
-## 🚀 Getting Started (Local Setup)
+## Getting Started (Local Setup)
 
 Follow these simple steps to set up the project on your local machine for development. 
 
@@ -82,7 +82,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-🎉 The application should now be accessible at:
+The application should now be accessible at:
 - **API Base URL**: `http://localhost:8000/`
 - **Admin Interface**: `http://localhost:8000/admin/`
 
