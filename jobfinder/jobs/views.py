@@ -154,27 +154,26 @@ class ApplyJob(APIView):
 # ========================================================================================================================
 
 
-# class GetJobApplicant(APIView):
+class GetJobApplicant(APIView):
 
-#     authentication_classes = []
-#     permission_classes = []
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
-#     def post(self, request, formate=None):
-#         data= request.data
-#         job_id=data.get('job_id')
+    def post(self, request, format=None):
+        data= request.data
+        job_id=data.get('job_id')
 
-#         if not job_id:
-#             return Response(get_validation_failure_response("Please provide job_id"))
+        if not job_id:
+            return Response(get_validation_failure_response("Please provide job_id"))
 
-#         try:
-#             jobApplication=JobApplication.objects.filter(job__id=job_id)
+        try:
+            jobApplication=JobApplication.objects.filter(job__id=job_id)
+        except JobApplication.DoesNotExist:
+            return Response(get_validation_failure_response("Invalid job_id"))
 
-#         except JobApplication.DoesNotExist:
-#             return Response(get_validation_failure_response("Invalid job_id"))
+        serializers=GetApplyedJobSerializer(jobApplication, many=True).data
 
-#         serializers=GetApplyedJobSerializer(jobApplication, many=True).data
-
-#         return Response(get_success_response(details=serializers))
+        return Response(get_success_response(details=serializers))
     
 
 # ========================================================================================================================
